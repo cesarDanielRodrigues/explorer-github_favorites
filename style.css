@@ -25,6 +25,10 @@ body * {
     
 }
 
+button{
+    background-color: var(--primary-color);
+}
+
 .sr-only{
     position: absolute;
     width: 1px;
