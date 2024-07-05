@@ -19,6 +19,10 @@ export class Favorites {
       },
     ]
   }
+  delete(user){
+    const filteredEntries = this.entries.filter(entry => entry.login !== user.login)
+    console.log(filteredEntries)
+  }
 }
 export class FavoritesView extends Favorites {
   constructor(root) {
@@ -40,6 +44,14 @@ export class FavoritesView extends Favorites {
       row.querySelector('td.repositories').textContent = `${userInfo.publicRepositorys}`
       row.querySelector('td.followers').textContent = `${userInfo.followers}`
 
+
+      row.querySelector('.remove').onclick = ()=>{
+        const isOK = confirm('Deseja mesmo excluir esse favorites?')
+        if(isOK){
+          this.delete(userInfo)
+        }
+      }
+
       this.tbody.append(row)
     })
     
@@ -49,7 +61,7 @@ export class FavoritesView extends Favorites {
 
     tr.innerHTML = `
           <td class="user">
-            <img src="https://github.com/maykbrito.png" alt="Imagem de Mayk Brito" />
+            <img src="https://github.com/maykbrito.png" alt'="Imagem de Mayk Brito" />
             <a href="https://github.com/maykbrito" target="_blank">
               <p>Mayk Brito</p>
               <span>maykbrito</span>
