@@ -4,24 +4,13 @@ export class Favorites {
     this.load()
   }
   load() {
-    this.entries = [
-      {
-        login: "maykbrito",
-        name: "Mayk Brito",
-        publicRepositorys: 20,
-        followers: 1000,
-      },
-      {
-        login: "diego3g",
-        name: "Diego Fernandes",
-        publicRepositorys: 20,
-        followers: 1000,
-      },
-    ]
+    this.entries = JSON.parse(localStorage.getItem('@github-favorites')) || []
   }
   delete(user){
     const filteredEntries = this.entries.filter(entry => entry.login !== user.login)
-    console.log(filteredEntries)
+
+    this.entries = filteredEntries
+    this.update()
   }
 }
 export class FavoritesView extends Favorites {
@@ -43,7 +32,6 @@ export class FavoritesView extends Favorites {
       row.querySelector('td a p').textContent = `${userInfo.name}`
       row.querySelector('td.repositories').textContent = `${userInfo.publicRepositorys}`
       row.querySelector('td.followers').textContent = `${userInfo.followers}`
-
 
       row.querySelector('.remove').onclick = ()=>{
         const isOK = confirm('Deseja mesmo excluir esse favorites?')
