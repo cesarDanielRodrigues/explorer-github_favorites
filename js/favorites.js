@@ -1,5 +1,5 @@
 export class GithubUser {
-  static async search(userName) {
+  static search(userName) {
     const url = `https://api.github.com/users/${userName}`
 
     // const data = await fetch(url);
@@ -21,15 +21,32 @@ export class Favorites {
   load() {
     this.entries = JSON.parse(localStorage.getItem("@github-favorites")) || []
   }
-  async add(userName) {
-    const user = await GithubUser.search(userName)
-    console.log(user)
+  save(){
+    localStorage.setItem('@github-favorites',JSON.stringify(this.entries))
   }
+
+  async add(userName) {
+    try {
+      const user = await GithubUser.search(userName)
+      if(user.login === undefined){
+        throw new Error("Usuário não encontrado");
+      }
+
+      this.entries = [user, ...this.entries]
+      this.update()
+      this.save()
+
+    } catch (error) {
+      alert(error.message)
+    }
+  }
+
   delete(user) {
     const filteredEntries = this.entries.filter((entry) => entry.login !== user.login)
 
     this.entries = filteredEntries
     this.update()
+    this.save()
   }
 }
 export class FavoritesView extends Favorites {
@@ -57,7 +74,7 @@ export class FavoritesView extends Favorites {
       row.querySelector("td img").alt = `Imagem de ${userInfo.name}`
       row.querySelector("td a").href = `https://github.com/${userInfo.login}`
       row.querySelector("td a p").textContent = `${userInfo.name}`
-      row.querySelector("td.repositories").textContent = `${userInfo.publicRepositorys}`
+      row.querySelector("td.repositories").textContent = `${userInfo.public_repos}`
       row.querySelector("td.followers").textContent = `${userInfo.followers}`
 
       row.querySelector(".remove").onclick = () => {
