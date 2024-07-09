@@ -1,17 +1,5 @@
-export class GithubUser {
-  static search(userName) {
-    const url = `https://api.github.com/users/${userName}`
+import { GithubUser } from "./githubUsers.js"
 
-    // const data = await fetch(url);
-    // const{ login, name, public_repos, followers } = await data.json()
-
-    // return { login, name, public_repos, followers}
-
-    return fetch(url)
-      .then((data) => data.json())
-      .then(({ login, name, public_repos, followers }) => ({ login, name, public_repos, followers }))
-  }
-}
 
 export class Favorites {
   constructor(root) {
@@ -21,21 +9,27 @@ export class Favorites {
   load() {
     this.entries = JSON.parse(localStorage.getItem("@github-favorites")) || []
   }
-  save(){
-    localStorage.setItem('@github-favorites',JSON.stringify(this.entries))
+  save() {
+    localStorage.setItem("@github-favorites", JSON.stringify(this.entries))
   }
 
   async add(userName) {
     try {
+      const userExists = this.entries.find(entry => entry.login === userName)
+
+      if(userExists){
+        throw new Error("Usuário já cadastrado")
+      }
+
+
       const user = await GithubUser.search(userName)
-      if(user.login === undefined){
-        throw new Error("Usuário não encontrado");
+      if (user.login === undefined) {
+        throw new Error("Usuário não encontrado")
       }
 
       this.entries = [user, ...this.entries]
       this.update()
       this.save()
-
     } catch (error) {
       alert(error.message)
     }
@@ -74,6 +68,7 @@ export class FavoritesView extends Favorites {
       row.querySelector("td img").alt = `Imagem de ${userInfo.name}`
       row.querySelector("td a").href = `https://github.com/${userInfo.login}`
       row.querySelector("td a p").textContent = `${userInfo.name}`
+      row.querySelector("td a span").textContent = `${userInfo.login}`
       row.querySelector("td.repositories").textContent = `${userInfo.public_repos}`
       row.querySelector("td.followers").textContent = `${userInfo.followers}`
 
